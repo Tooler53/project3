@@ -50,7 +50,6 @@ public class MeasurementsController {
 
     @GetMapping
     public List<MeasurementDTO> getAllMeasurements() {
-        //todo нет привязки к определенному сенсору
         return measurementService.findAll().stream().map(this::convertToMeasurementDTO).collect(Collectors.toList());
     }
 

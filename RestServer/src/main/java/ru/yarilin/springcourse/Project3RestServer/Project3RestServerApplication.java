@@ -17,4 +17,7 @@ public class Project3RestServerApplication {
 	public ModelMapper modelMapper() {
 		return new ModelMapper();
 	}
+
+	//todo создать табличку наблюдателей, создать табличку свойств сенсоров с закрепленными наблюдателями// ДОБАВИЛ
+	//todo добавить для этих табличек модели, сервисы и репозитории
 }

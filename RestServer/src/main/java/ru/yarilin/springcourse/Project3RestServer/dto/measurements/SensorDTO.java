@@ -1,13 +1,10 @@
 package ru.yarilin.springcourse.Project3RestServer.dto.measurements;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class SensorDTO {
     private String name;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 }

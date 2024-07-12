@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.*;
 import ru.yarilin.springcourse.Project3RestServer.dto.sensor.RegistrationDTO;
 import ru.yarilin.springcourse.Project3RestServer.exceptions.SensorNotCreatedException;
 import ru.yarilin.springcourse.Project3RestServer.models.Sensor;
+import ru.yarilin.springcourse.Project3RestServer.models.SensorProperties;
+import ru.yarilin.springcourse.Project3RestServer.models.Watchers;
+import ru.yarilin.springcourse.Project3RestServer.services.SensorPropertiesService;
 import ru.yarilin.springcourse.Project3RestServer.services.SensorService;
 import ru.yarilin.springcourse.Project3RestServer.util.SensorErrorResponse;
 import ru.yarilin.springcourse.Project3RestServer.util.SensorValidator;
@@ -24,19 +27,23 @@ public class SensorsController {
 
     private final ModelMapper modelMapper;
     private final SensorService sensorService;
+    private final SensorPropertiesService sensorPropertiesService;
 
     private final SensorValidator sensorValidator;
 
     @Autowired
-    public SensorsController(ModelMapper modelMapper, SensorService sensorService, SensorValidator sensorValidator) {
+    public SensorsController(ModelMapper modelMapper, SensorService sensorService, SensorPropertiesService sensorPropertiesService, SensorValidator sensorValidator) {
         this.modelMapper = modelMapper;
         this.sensorService = sensorService;
+        this.sensorPropertiesService = sensorPropertiesService;
         this.sensorValidator = sensorValidator;
     }
 
     @PostMapping("/registration")
     public ResponseEntity<HttpStatus> registration(@RequestBody @Valid RegistrationDTO registrationDTO, BindingResult bindingResult) {
+        SensorProperties sensorProperties = convertToSensorProperties(registrationDTO);
         Sensor sensor = convertToSensor(registrationDTO);
+
         sensorValidator.validate(sensor, bindingResult);
 
         if (bindingResult.hasErrors()) {
@@ -49,11 +56,21 @@ public class SensorsController {
         }
         sensorService.save(sensor);
 
+        sensorPropertiesService.save(sensorProperties, registrationDTO.getWatcher_id(), sensor);
+
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
     private Sensor convertToSensor(RegistrationDTO registrationDTO) {
         return modelMapper.map(registrationDTO, Sensor.class);
+    }
+
+    private SensorProperties convertToSensorProperties(RegistrationDTO registrationDTO) {
+        return modelMapper.map(registrationDTO.getSensorProperties(), SensorProperties.class);
+    }
+
+    private Watchers convertToWatchers(RegistrationDTO registrationDTO) {
+        return modelMapper.map(registrationDTO, Watchers.class);
     }
 
     @ExceptionHandler
